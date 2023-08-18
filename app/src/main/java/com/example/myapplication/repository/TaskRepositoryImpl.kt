@@ -2,7 +2,6 @@ package com.example.myapplication.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.onStart
 
 class TaskRepositoryImpl : TaskRepository {
 
@@ -24,5 +23,10 @@ class TaskRepositoryImpl : TaskRepository {
         val currentTasks = _taskDTOListStream.replayCache.firstOrNull() ?: emptyList()
         val updatedTasks = currentTasks.filterNot { it.id == id }
         _taskDTOListStream.emit(updatedTasks)
+    }
+
+    override fun getTaskById(id: String): TaskDTO {
+        val currentTasks = _taskDTOListStream.replayCache.firstOrNull() ?: emptyList()
+        return currentTasks.find { it.id == id }!!
     }
 }

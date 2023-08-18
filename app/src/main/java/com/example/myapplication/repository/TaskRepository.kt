@@ -6,4 +6,5 @@ interface TaskRepository {
     fun getAllTasks(): Flow<List<TaskDTO>>
     suspend fun addTask(taskDTO: TaskDTO)
     suspend fun deleteTask(id: String)
+    fun getTaskById(id: String): TaskDTO
 }

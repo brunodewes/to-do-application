@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.repository.TaskRepositoryImpl
 
-class TaskResultViewModelFactory : ViewModelProvider.Factory {
+class TaskDetailViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return TaskFormViewModel(
+        return TaskDetailViewModel(
             taskRepository = TaskRepositoryImpl()
         ) as T
     }

@@ -10,14 +10,14 @@ import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentTaskFormBinding
 import com.example.myapplication.repository.TaskDTO
-import com.example.myapplication.tasklist.ui.viewModels.TaskFormViewModel
-import com.example.myapplication.tasklist.ui.viewModels.TaskFormViewModelFactory
+import com.example.myapplication.tasklist.ui.viewModels.TaskListViewModel
+import com.example.myapplication.tasklist.ui.viewModels.TaskListViewModelFactory
 
 class TaskFormFragment : Fragment(R.layout.fragment_task_form) {
 
     private lateinit var binding: FragmentTaskFormBinding
-    private val viewModel: TaskFormViewModel by viewModels(
-        factoryProducer = { TaskFormViewModelFactory() }
+    private val viewModel: TaskListViewModel by viewModels(
+        factoryProducer = { TaskListViewModelFactory() }
     )
     private lateinit var taskDTO: TaskDTO
 

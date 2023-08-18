@@ -9,7 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.R
-import com.example.myapplication.tasklist.ui.data.TaskListUiState
 import com.example.myapplication.databinding.FragmentTaskListBinding
 import com.example.myapplication.tasklist.ui.viewModels.TaskListViewModel
 import com.example.myapplication.tasklist.ui.viewModels.TaskListViewModelFactory
@@ -21,7 +20,6 @@ class TaskListFragment : Fragment(R.layout.fragment_task_list) {
         factoryProducer = { TaskListViewModelFactory() }
     )
     private lateinit var todoAdapter: TodoAdapter
-    private lateinit var taskListUiState: TaskListUiState
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,6 +28,11 @@ class TaskListFragment : Fragment(R.layout.fragment_task_list) {
     ): View {
         binding = FragmentTaskListBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        println(viewModel.setUpdatedList())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -42,7 +45,6 @@ class TaskListFragment : Fragment(R.layout.fragment_task_list) {
 
         viewModel.taskListLiveData.observe(viewLifecycleOwner) {
             todoAdapter.updateTaskList(it)
-            taskListUiState = viewModel.setTaskList()
         }
 
         binding.btnAddTask.setOnClickListener {
@@ -51,15 +53,16 @@ class TaskListFragment : Fragment(R.layout.fragment_task_list) {
 
         todoAdapter.setOnItemClickListener(object: TodoAdapter.onItemClickListener {
             override fun onItemClick(position: Int) {
-                val bundle = Bundle()
-                bundle.putSerializable("taskId", taskListUiState.tasks[position].id)
-
+                val taskId = todoAdapter.getTaskIdAtPosition(position)
+                val bundle = Bundle().apply {
+                    putString("taskId", taskId)
+                }
                 findNavController().navigate(R.id.navigateToTaskDetailFragment, bundle)
             }
         })
 
         binding.btnDeleteDoneTasks.setOnClickListener {
-            viewModel.deleteDone()
+//            viewModel.deleteDone()
         }
     }
 }

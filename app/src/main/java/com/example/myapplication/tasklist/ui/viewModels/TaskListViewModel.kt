@@ -7,15 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.myapplication.repository.TaskDTO
 import com.example.myapplication.tasklist.ui.data.TaskListUiState
 import com.example.myapplication.tasklist.mapper.TaskItemUiStateMapper
-import com.example.myapplication.repository.TaskRepository
+import com.example.myapplication.repository.taskRepository
 import com.example.myapplication.tasklist.ui.data.TaskListUiEvent
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class TaskListViewModel(
-    private val taskRepository: TaskRepository,
-    private val taskItemUiStateMapper: TaskItemUiStateMapper,
+    private val taskItemUiStateMapper: TaskItemUiStateMapper
 ) : ViewModel() {
+
     private val taskListDTOLiveData: MutableLiveData<List<TaskDTO>> = MutableLiveData()
     private val checkedTasksIdLiveData: MutableLiveData<List<String>> = MutableLiveData()
     val taskListLiveData: MediatorLiveData<TaskListUiState> = MediatorLiveData()
@@ -72,11 +71,5 @@ class TaskListViewModel(
 
     fun setUpdatedList(): TaskListUiState {
         return taskListLiveData.value ?: TaskListUiState(emptyList())
-    }
-
-    fun addTask(taskDTO: TaskDTO) {
-        viewModelScope.launch {
-            taskRepository.addTask(taskDTO).collect()
-        }
     }
 }

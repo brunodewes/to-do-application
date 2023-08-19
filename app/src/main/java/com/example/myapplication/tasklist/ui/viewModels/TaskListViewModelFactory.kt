@@ -8,7 +8,7 @@ import com.example.myapplication.repository.TaskRepositoryImpl
 class TaskListViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return TaskListViewModel(
-            taskRepository = TaskRepositoryImpl(),
+//            taskRepository = TaskRepositoryImpl(),
             taskItemUiStateMapper = TaskItemUiStateMapperImpl(),
         ) as T
     }

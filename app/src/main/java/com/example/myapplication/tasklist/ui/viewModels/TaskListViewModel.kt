@@ -9,6 +9,7 @@ import com.example.myapplication.tasklist.ui.data.TaskListUiState
 import com.example.myapplication.tasklist.mapper.TaskItemUiStateMapper
 import com.example.myapplication.repository.TaskRepository
 import com.example.myapplication.tasklist.ui.data.TaskListUiEvent
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class TaskListViewModel(
@@ -75,7 +76,7 @@ class TaskListViewModel(
 
     fun addTask(taskDTO: TaskDTO) {
         viewModelScope.launch {
-            taskRepository.addTask(taskDTO)
+            taskRepository.addTask(taskDTO).collect()
         }
     }
 }

@@ -2,6 +2,8 @@ package com.example.myapplication.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 
 class TaskRepositoryImpl : TaskRepository {
 
@@ -13,10 +15,11 @@ class TaskRepositoryImpl : TaskRepository {
         return _taskDTOListStream
     }
 
-    override suspend fun addTask(taskDTO: TaskDTO) {
-        val currentTasks = _taskDTOListStream.replayCache.firstOrNull() ?: emptyList()
-        val updatedTasks = currentTasks + taskDTO
-        _taskDTOListStream.emit(updatedTasks)
+    override fun addTask(taskDTO: TaskDTO): Flow<List<TaskDTO>> {
+        return _taskDTOListStream.take(1).onEach {
+            println(it+taskDTO)
+            _taskDTOListStream.emit(it + taskDTO)
+        }
     }
 
     override suspend fun deleteTask(id: String) {

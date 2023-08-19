@@ -30,10 +30,10 @@ class TaskListFragment : Fragment(R.layout.fragment_task_list) {
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        println(viewModel.setUpdatedList())
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        println(viewModel.setUpdatedList())
+//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -12,7 +12,7 @@ import com.example.myapplication.repository.TaskDTO
 import com.example.myapplication.tasklist.ui.viewModels.TaskDetailViewModel
 import com.example.myapplication.tasklist.ui.viewModels.TaskDetailViewModelFactory
 
-class TaskDetailFragment() : Fragment() {
+class TaskDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentTaskDetailBinding
     private val viewModel: TaskDetailViewModel by viewModels(
@@ -25,7 +25,7 @@ class TaskDetailFragment() : Fragment() {
 
         arguments?.let {
            val id = it.getSerializable("taskId") as String
-            taskDTO = viewModel.getTaskById(id)
+           taskDTO = viewModel.getTaskById(id)
         }
     }
 

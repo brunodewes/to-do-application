@@ -13,7 +13,7 @@ import com.example.myapplication.databinding.FragmentTaskListBinding
 import com.example.myapplication.tasklist.ui.viewModels.TaskListViewModel
 import com.example.myapplication.tasklist.ui.viewModels.TaskListViewModelFactory
 
-class TaskListFragment : Fragment(R.layout.fragment_task_list) {
+class TaskListFragment : Fragment() {
 
     private lateinit var binding: FragmentTaskListBinding
     private val viewModel: TaskListViewModel by viewModels(
@@ -29,11 +29,6 @@ class TaskListFragment : Fragment(R.layout.fragment_task_list) {
         binding = FragmentTaskListBinding.inflate(inflater, container, false)
         return binding.root
     }
-
-//    override fun onResume() {
-//        super.onResume()
-//        println(viewModel.setUpdatedList())
-//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

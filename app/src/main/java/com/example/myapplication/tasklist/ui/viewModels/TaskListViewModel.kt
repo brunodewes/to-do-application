@@ -5,13 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.repository.TaskDTO
+import com.example.myapplication.repository.TaskRepository
 import com.example.myapplication.tasklist.ui.data.TaskListUiState
 import com.example.myapplication.tasklist.mapper.TaskItemUiStateMapper
-import com.example.myapplication.repository.taskRepository
 import com.example.myapplication.tasklist.ui.data.TaskListUiEvent
 import kotlinx.coroutines.launch
 
 class TaskListViewModel(
+    private val taskRepository: TaskRepository,
     private val taskItemUiStateMapper: TaskItemUiStateMapper
 ) : ViewModel() {
 

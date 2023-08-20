@@ -7,16 +7,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentTaskFormBinding
 import com.example.myapplication.repository.TaskDTO
 import com.example.myapplication.tasklist.ui.viewModels.TaskFormViewModel
 import com.example.myapplication.tasklist.ui.viewModels.TaskFormViewModelFactory
 
-class TaskFormFragment : Fragment(R.layout.fragment_task_form) {
+class TaskFormFragment : Fragment() {
 
     private lateinit var binding: FragmentTaskFormBinding
-    private val viewModel: TaskFormViewModel by viewModels()
+    private val viewModel: TaskFormViewModel by viewModels(
+        factoryProducer = { TaskFormViewModelFactory() }
+    )
     private lateinit var taskDTO: TaskDTO
 
     override fun onCreateView(

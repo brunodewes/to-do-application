@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 
-class TaskRepositoryImpl : TaskRepository {
+object TaskRepositoryImpl : TaskRepository {
 
     private val _taskDTOListStream: MutableSharedFlow<List<TaskDTO>> =
         MutableSharedFlow<List<TaskDTO>>(

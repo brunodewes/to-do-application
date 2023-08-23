@@ -16,32 +16,38 @@
         app:titleTextStyle="@style/AppTheme"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvTaskTitle"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/etTaskTitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="5dp"
-        android:text="Empty Title"
+        android:layout_marginRight="50dp"
+        android:background="@android:color/transparent"
+        android:hint="Empty Title"
+        android:gravity="top|center"
         android:textSize="48sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnCloseTaskDetail" />
 
-    <TextView
-        android:id="@+id/tvTaskDescription"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/etTaskDescription"
+        android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginLeft="25dp"
         android:layout_marginTop="50dp"
         android:layout_marginRight="25dp"
-        android:layout_marginLeft="25dp"
         android:layout_marginBottom="50dp"
+        android:background="@android:color/transparent"
+        android:hint="Empty Description"
+        android:gravity="top|center"
         android:textSize="24sp"
-        android:text="Empty Description"
         app:layout_constraintBottom_toTopOf="@+id/btnDeleteTask"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTaskTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/etTaskTitle" />
 
     <ImageButton
         android:id="@+id/btnCloseTaskDetail"
@@ -62,6 +68,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:contentDescription="@string/delete_task" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,28 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.databinding.FragmentTaskDetailBinding
-import com.example.myapplication.repository.TaskDTO
 import com.example.myapplication.tasklist.ui.viewModels.TaskDetailViewModel
 import com.example.myapplication.tasklist.ui.viewModels.TaskDetailViewModelFactory
 
 class TaskDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentTaskDetailBinding
-    private val viewModel: TaskDetailViewModel by viewModels(
-        factoryProducer = { TaskDetailViewModelFactory() }
-    )
-    private lateinit var taskDTO: TaskDTO
+    private lateinit var viewModel: TaskDetailViewModel
+    private lateinit var taskId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        arguments?.let {
-           val id = it.getSerializable("taskId") as String
-           taskDTO = viewModel.getTaskById(id)
-        }
+        taskId = requireArguments().getString("taskId") as String
     }
 
     override fun onCreateView(
@@ -35,25 +29,31 @@ class TaskDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentTaskDetailBinding.inflate(inflater, container, false)
+
+        viewModel = ViewModelProvider(this, TaskDetailViewModelFactory(taskId))[TaskDetailViewModel::class.java]
+
+        viewModel.taskDetailLiveData.observe(viewLifecycleOwner) { task ->
+                if (task != null) {
+                    binding.etTaskTitle.setText(task.title)
+                }
+                if (task != null) {
+                    binding.etTaskDescription.setText(task.description)
+                }
+        }
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.tvTaskTitle.text = taskDTO.title
-        binding.tvTaskDescription.text = taskDTO.description
-
         binding.btnCloseTaskDetail.setOnClickListener {
             findNavController().popBackStack()
         }
 
         binding.btnDeleteTask.setOnClickListener {
-            viewModel.deleteTask(taskDTO.id)
+            viewModel.deleteTask(taskId)
             findNavController().popBackStack()
         }
-
     }
-
-
 }

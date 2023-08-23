@@ -1,5 +1,6 @@
 package com.example.myapplication.tasklist.ui.viewModels
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.repository.TaskDTO
@@ -8,19 +9,21 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class TaskDetailViewModel(
+    private val taskId: String,
     private val taskRepository: TaskRepository
 ) : ViewModel() {
 
-    fun getTaskById(id: String): TaskDTO {
-        var foundTask: TaskDTO? = null
+    val taskDetailLiveData: MutableLiveData<TaskDTO?> = MutableLiveData()
+
+    init {
         viewModelScope.launch {
             taskRepository
                 .getAllTasks()
-                .collect { currentTasks ->
-                    foundTask = currentTasks.find { it.id == id }
+                .collect { tasks ->
+                    val task = tasks.find { it.id == taskId }
+                    taskDetailLiveData.postValue(task)
                 }
         }
-        return foundTask ?: throw NoSuchElementException("Task with ID $id not found")
     }
 
     fun deleteTask(id: String) {
@@ -30,5 +33,4 @@ class TaskDetailViewModel(
                 .collect()
         }
     }
-
 }

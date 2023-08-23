@@ -36,10 +36,7 @@ class TaskListViewModel(
         }
     }
 
-    private fun buildUiState(
-        taskDTOList: List<TaskDTO>,
-        checkedTasksId: List<String>,
-    ): TaskListUiState {
+    private fun buildUiState(taskDTOList: List<TaskDTO>, checkedTasksId: List<String>): TaskListUiState {
         val tasks = taskDTOList.map { taskDTO ->
             taskItemUiStateMapper.mapToUiState(
                 taskDTO = taskDTO,
@@ -54,7 +51,7 @@ class TaskListViewModel(
             is TaskListUiEvent.OnCheckChanged -> {
                 updateTaskCheckStatus(
                     taskId = uiEvent.taskId,
-                    isChecked = uiEvent.isChecked,
+                    isChecked = uiEvent.isChecked
                 )
             }
         }
@@ -70,7 +67,7 @@ class TaskListViewModel(
         checkedTasksIdLiveData.value = checkedTasksId
     }
 
-    fun setUpdatedList(): TaskListUiState {
+    fun setTaskList(): TaskListUiState {
         return taskListLiveData.value ?: TaskListUiState(emptyList())
     }
 }

@@ -12,7 +12,7 @@ import com.example.myapplication.tasklist.ui.viewModels.TaskListViewModel
 
 class TodoAdapter(viewModel: TaskListViewModel) : RecyclerView.Adapter<TodoAdapter.TaskViewHolder>(){
 
-    private var taskListUiState = viewModel.setUpdatedList()
+    private var taskListUiState = viewModel.setTaskList()
     private lateinit var mListener: onItemClickListener
 
     interface onItemClickListener {
@@ -21,7 +21,6 @@ class TodoAdapter(viewModel: TaskListViewModel) : RecyclerView.Adapter<TodoAdapt
 
     fun updateTaskList(newTaskList: TaskListUiState) {
         taskListUiState = newTaskList
-//        println(taskListUiState)
         notifyDataSetChanged()
     }
 
@@ -37,7 +36,7 @@ class TodoAdapter(viewModel: TaskListViewModel) : RecyclerView.Adapter<TodoAdapt
 
         init {
             itemView.setOnClickListener {
-                listener.onItemClick(adapterPosition)
+                listener.onItemClick(bindingAdapterPosition)
             }
         }
 

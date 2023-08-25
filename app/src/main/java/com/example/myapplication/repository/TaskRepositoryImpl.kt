@@ -20,15 +20,27 @@ object TaskRepositoryImpl : TaskRepository {
 
     override fun addTask(taskDTO: TaskDTO): Flow<List<TaskDTO>> {
         return _taskDTOListStream.take(1).onEach { currentTasks ->
-            val updatedTasks = currentTasks + taskDTO
-            _taskDTOListStream.emit(updatedTasks)
+            val newTaskList = currentTasks + taskDTO
+            _taskDTOListStream.emit(newTaskList)
         }
     }
 
     override fun deleteTask(id: String): Flow<List<TaskDTO>> {
         return _taskDTOListStream.take(1).onEach { currentTasks ->
-            val updatedTasks = currentTasks.filterNot { it.id == id }
-            _taskDTOListStream.emit(updatedTasks)
+            val newTaskList = currentTasks.filterNot { it.id == id }
+            _taskDTOListStream.emit(newTaskList)
+        }
+    }
+
+    override fun updateTask(taskDTO: TaskDTO): Flow<List<TaskDTO>> {
+        return _taskDTOListStream.take(1).onEach { currentTasks ->
+            currentTasks.find { it.id == taskDTO.id }?.let { foundTask ->
+                foundTask.description = taskDTO.description
+                if (taskDTO.title.isNotEmpty()) {
+                    foundTask.title = taskDTO.title
+                }
+            }
+            _taskDTOListStream.emit(currentTasks)
         }
     }
 }

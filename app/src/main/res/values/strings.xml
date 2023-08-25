@@ -3,4 +3,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_task">Add task</string>
     <string name="delete_task">Delete task</string>
+    <string name="empty_title">Empty Title</string>
+    <string name="empty_description">Empty Description</string>
 </resources>

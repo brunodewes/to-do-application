@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,10 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/deep_blue"
+        app:layout_constraintTop_toTopOf="parent"
         app:title="Todo Details"
         app:titleTextColor="@android:color/white"
-        app:titleTextStyle="@style/AppTheme"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:titleTextStyle="@style/AppTheme" />
 
     <EditText
         android:id="@+id/etTaskTitle"
@@ -24,8 +26,10 @@
         android:layout_marginTop="5dp"
         android:layout_marginRight="50dp"
         android:background="@android:color/transparent"
-        android:hint="Empty Title"
         android:gravity="top|center"
+        android:hint="@string/empty_title"
+        android:importantForAutofill="no"
+        android:inputType="text"
         android:textSize="48sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -41,8 +45,10 @@
         android:layout_marginRight="25dp"
         android:layout_marginBottom="50dp"
         android:background="@android:color/transparent"
-        android:hint="Empty Description"
         android:gravity="top|center"
+        android:hint="@string/empty_description"
+        android:importantForAutofill="no"
+        android:inputType="text"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/btnDeleteTask"
         app:layout_constraintEnd_toEndOf="parent"
@@ -56,6 +62,8 @@
         android:background="@android:color/transparent"
         android:importantForAccessibility="no"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
@@ -64,11 +72,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
+        android:contentDescription="@string/delete_task"
         android:src="@mipmap/ic_deletedone"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        android:contentDescription="@string/delete_task" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

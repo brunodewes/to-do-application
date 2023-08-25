@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -29,16 +30,12 @@ class TaskDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentTaskDetailBinding.inflate(inflater, container, false)
-
+        
         viewModel = ViewModelProvider(this, TaskDetailViewModelFactory(taskId))[TaskDetailViewModel::class.java]
 
         viewModel.taskDetailLiveData.observe(viewLifecycleOwner) { task ->
-                if (task != null) {
-                    binding.etTaskTitle.setText(task.title)
-                }
-                if (task != null) {
-                    binding.etTaskDescription.setText(task.description)
-                }
+            binding.etTaskTitle.setText(task.title)
+            binding.etTaskDescription.setText(task.description)
         }
 
         return binding.root
@@ -46,6 +43,14 @@ class TaskDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.etTaskTitle.addTextChangedListener {
+            viewModel.updateTitle(it.toString())
+        }
+
+        binding.etTaskDescription.addTextChangedListener {
+            viewModel.updateDescription(it.toString())
+        }
 
         binding.btnCloseTaskDetail.setOnClickListener {
             findNavController().popBackStack()

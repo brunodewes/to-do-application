@@ -20,7 +20,7 @@
 
     <EditText
         android:id="@+id/etTaskTitle"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="50dp"
         android:layout_marginTop="5dp"
@@ -29,7 +29,7 @@
         android:gravity="top|center"
         android:hint="@string/empty_title"
         android:importantForAutofill="no"
-        android:inputType="text"
+        android:inputType="textMultiLine"
         android:textSize="48sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -48,7 +48,7 @@
         android:gravity="top|center"
         android:hint="@string/empty_description"
         android:importantForAutofill="no"
-        android:inputType="text"
+        android:inputType="textMultiLine"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/btnDeleteTask"
         app:layout_constraintEnd_toEndOf="parent"
@@ -60,17 +60,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:importantForAccessibility="no"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:focusable="false"
         android:focusableInTouchMode="false"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        android:contentDescription="@string/close_window" />
 
     <ImageButton
         android:id="@+id/btnDeleteTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
         android:contentDescription="@string/delete_task"
         android:src="@mipmap/ic_deletedone"
@@ -78,7 +79,6 @@
         android:focusableInTouchMode="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

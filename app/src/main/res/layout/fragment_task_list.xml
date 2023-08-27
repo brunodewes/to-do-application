@@ -12,10 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/deep_blue"
+        app:layout_constraintTop_toTopOf="parent"
         app:title="My Todo App"
         app:titleTextColor="@android:color/white"
-        app:titleTextStyle="@style/AppTheme"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:titleTextStyle="@style/AppTheme" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTodoItems"
@@ -33,16 +33,24 @@
         android:id="@+id/btnDeleteDoneTasks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
+        android:contentDescription="@string/delete_done_todos"
         android:src="@mipmap/ic_deletedone"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
         android:id="@+id/btnAddTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
+        android:contentDescription="@string/add_new_todo"
         android:src="@mipmap/ic_addtask"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

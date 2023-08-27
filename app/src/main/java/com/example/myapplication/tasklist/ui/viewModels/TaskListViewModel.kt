@@ -9,6 +9,7 @@ import com.example.myapplication.repository.TaskRepository
 import com.example.myapplication.tasklist.ui.data.TaskListUiState
 import com.example.myapplication.tasklist.mapper.TaskItemUiStateMapper
 import com.example.myapplication.tasklist.ui.data.TaskListUiEvent
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class TaskListViewModel(
@@ -17,7 +18,7 @@ class TaskListViewModel(
 ) : ViewModel() {
 
     private val taskListDTOLiveData: MutableLiveData<List<TaskDTO>> = MutableLiveData()
-    private val checkedTasksIdLiveData: MutableLiveData<List<String>> = MutableLiveData()
+    val checkedTasksIdLiveData: MutableLiveData<List<String>> = MutableLiveData()
     val taskListLiveData: MediatorLiveData<TaskListUiState> = MediatorLiveData()
 
     init {
@@ -36,7 +37,10 @@ class TaskListViewModel(
         }
     }
 
-    private fun buildUiState(taskDTOList: List<TaskDTO>, checkedTasksId: List<String>): TaskListUiState {
+    private fun buildUiState(
+        taskDTOList: List<TaskDTO>,
+        checkedTasksId: List<String>
+    ): TaskListUiState {
         val tasks = taskDTOList.map { taskDTO ->
             taskItemUiStateMapper.mapToUiState(
                 taskDTO = taskDTO,
@@ -56,6 +60,18 @@ class TaskListViewModel(
             }
         }
     }
+
+    fun deleteDone() {
+        viewModelScope.launch {
+            checkedTasksIdLiveData.value?.forEach {
+                taskRepository
+                    .deleteTask(it)
+                    .collect()
+                updateTaskCheckStatus(it, false)
+            }
+        }
+    }
+
 
     private fun updateTaskCheckStatus(taskId: String, isChecked: Boolean) {
         val checkedTasksId = checkedTasksIdLiveData.value.orEmpty().toMutableList()

@@ -5,4 +5,9 @@
     <string name="delete_task">Delete task</string>
     <string name="empty_title">Empty Title</string>
     <string name="empty_description">Empty Description</string>
+    <string name="enter_todo_description">Enter Todo Description</string>
+    <string name="enter_todo_title">Enter Todo Title</string>
+    <string name="delete_done_todos">Delete done todos</string>
+    <string name="add_new_todo">Add new todo</string>
+    <string name="close_window">Close window</string>
 </resources>

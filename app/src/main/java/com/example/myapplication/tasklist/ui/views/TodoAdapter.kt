@@ -8,9 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.tasklist.ui.data.TaskListItemUiState
 import com.example.myapplication.tasklist.ui.data.TaskListUiState
 import com.example.myapplication.databinding.ItemTodoBinding
+import com.example.myapplication.tasklist.ui.data.TaskListUiEvent
 import com.example.myapplication.tasklist.ui.viewModels.TaskListViewModel
 
-class TodoAdapter(viewModel: TaskListViewModel) : RecyclerView.Adapter<TodoAdapter.TaskViewHolder>(){
+class TodoAdapter(private val viewModel: TaskListViewModel) : RecyclerView.Adapter<TodoAdapter.TaskViewHolder>(){
 
     private var taskListUiState = viewModel.setTaskList()
     private lateinit var mListener: onItemClickListener
@@ -32,24 +33,20 @@ class TodoAdapter(viewModel: TaskListViewModel) : RecyclerView.Adapter<TodoAdapt
         mListener = listener
     }
 
-    class TaskViewHolder(private val binding: ItemTodoBinding, listener: onItemClickListener) : RecyclerView.ViewHolder(binding.root) {
+    inner class TaskViewHolder(private val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root) {
 
         init {
             itemView.setOnClickListener {
-                listener.onItemClick(bindingAdapterPosition)
+                mListener.onItemClick(bindingAdapterPosition)
             }
         }
 
         fun bind(task: TaskListItemUiState) {
-
             binding.tvTaskTitle.text = task.title
             binding.cbDone.isChecked = task.isChecked
-
             toggleStrikeThrough(binding.tvTaskTitle, task.isChecked)
-
             binding.cbDone.setOnCheckedChangeListener { _, isChecked ->
-                toggleStrikeThrough(binding.tvTaskTitle, isChecked)
-                task.isChecked = isChecked
+                viewModel.handleUiEvents(TaskListUiEvent.OnCheckChanged(getTaskIdAtPosition(bindingAdapterPosition), isChecked))
             }
         }
 
@@ -64,7 +61,7 @@ class TodoAdapter(viewModel: TaskListViewModel) : RecyclerView.Adapter<TodoAdapt
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val binding = ItemTodoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return TaskViewHolder(binding, mListener)
+        return TaskViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {

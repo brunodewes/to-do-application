@@ -61,4 +61,9 @@ class TaskDetailFragment : Fragment() {
             findNavController().popBackStack()
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.updateTask()
+    }
 }

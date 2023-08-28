@@ -83,6 +83,14 @@ class TaskListViewModel(
         checkedTasksIdLiveData.value = checkedTasksId
     }
 
+    fun removeInvalidCheckedIds() {
+        val checkedIds = checkedTasksIdLiveData.value ?: emptyList()
+        val taskIds = taskListDTOLiveData.value?.map { it.id } ?: emptyList()
+
+        val validCheckedIds = checkedIds.filter { taskId -> taskIds.contains(taskId) }
+        checkedTasksIdLiveData.postValue(validCheckedIds)
+    }
+
     fun setTaskList(): TaskListUiState {
         return taskListLiveData.value ?: TaskListUiState(emptyList())
     }

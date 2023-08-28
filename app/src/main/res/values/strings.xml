@@ -10,4 +10,7 @@
     <string name="delete_done_todos">Delete done todos</string>
     <string name="add_new_todo">Add new todo</string>
     <string name="close_window">Close window</string>
+    <string name="title">Title</string>
+    <string name="content">Content</string>
+    <string name="description">Description</string>
 </resources>

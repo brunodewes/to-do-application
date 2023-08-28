@@ -20,52 +20,63 @@
 
     <EditText
         android:id="@+id/etTaskTitle"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="50dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
         android:background="@android:color/transparent"
         android:gravity="top|center"
         android:hint="@string/empty_title"
         android:importantForAutofill="no"
         android:inputType="textMultiLine"
-        android:textSize="48sp"
+        android:textSize="35sp"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnCloseTaskDetail" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_discart_changes" />
 
     <EditText
         android:id="@+id/etTaskDescription"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginLeft="25dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginRight="25dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
-        android:gravity="top|center"
+        android:gravity="top"
         android:hint="@string/empty_description"
         android:importantForAutofill="no"
         android:inputType="textMultiLine"
-        android:textSize="24sp"
+        android:textSize="25sp"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/btnDeleteTask"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etTaskTitle" />
 
     <ImageButton
-        android:id="@+id/btnCloseTaskDetail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:src="@android:drawable/ic_menu_close_clear_cancel"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
+        android:id="@+id/btn_discart_changes"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/ic_back"
+        android:importantForAccessibility="no"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <ImageButton
+        android:id="@+id/btnUpdateTask"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/ic_done"
+        android:importantForAccessibility="no"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        android:contentDescription="@string/close_window" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <ImageButton
         android:id="@+id/btnDeleteTask"

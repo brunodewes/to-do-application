@@ -52,7 +52,12 @@ class TaskDetailFragment : Fragment() {
             viewModel.updateDescription(it.toString())
         }
 
-        binding.btnCloseTaskDetail.setOnClickListener {
+        binding.btnDiscartChanges.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding.btnUpdateTask.setOnClickListener {
+            viewModel.updateTask()
             findNavController().popBackStack()
         }
 
@@ -60,10 +65,5 @@ class TaskDetailFragment : Fragment() {
             viewModel.deleteTask(taskId)
             findNavController().popBackStack()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        viewModel.updateTask()
     }
 }

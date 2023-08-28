@@ -37,7 +37,6 @@
         android:background="@android:color/transparent"
         android:contentDescription="@string/delete_done_todos"
         android:src="@mipmap/ic_deletedone"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

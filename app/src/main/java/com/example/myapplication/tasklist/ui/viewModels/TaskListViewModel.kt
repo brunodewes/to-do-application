@@ -33,7 +33,10 @@ class TaskListViewModel(
         viewModelScope.launch {
             taskRepository
                 .getAllTasks()
-                .collect { taskListDTOLiveData.postValue(it) }
+                .collect {
+                    removeInvalidCheckedIds(it)
+                    taskListDTOLiveData.postValue(it)
+                }
         }
     }
 
@@ -67,7 +70,6 @@ class TaskListViewModel(
                 taskRepository
                     .deleteTask(it)
                     .collect()
-                updateTaskCheckStatus(it, false)
             }
         }
     }
@@ -83,9 +85,9 @@ class TaskListViewModel(
         checkedTasksIdLiveData.value = checkedTasksId
     }
 
-    fun removeInvalidCheckedIds() {
+    private fun removeInvalidCheckedIds(tasks: List<TaskDTO>) {
         val checkedIds = checkedTasksIdLiveData.value ?: emptyList()
-        val taskIds = taskListDTOLiveData.value?.map { it.id } ?: emptyList()
+        val taskIds = tasks.map { it.id }
 
         val validCheckedIds = checkedIds.filter { taskId -> taskIds.contains(taskId) }
         checkedTasksIdLiveData.postValue(validCheckedIds)

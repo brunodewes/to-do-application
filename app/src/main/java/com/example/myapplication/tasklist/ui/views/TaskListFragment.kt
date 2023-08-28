@@ -16,10 +16,10 @@ import com.example.myapplication.tasklist.ui.viewModels.TaskListViewModelFactory
 class TaskListFragment : Fragment() {
 
     private lateinit var binding: FragmentTaskListBinding
+    private lateinit var todoAdapter: TodoAdapter
     private val viewModel: TaskListViewModel by viewModels(
         factoryProducer = { TaskListViewModelFactory() }
     )
-    private lateinit var todoAdapter: TodoAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,8 +33,6 @@ class TaskListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.removeInvalidCheckedIds()
-
         todoAdapter = TodoAdapter(viewModel)
 
         binding.rvTodoItems.adapter = todoAdapter
@@ -45,6 +43,7 @@ class TaskListFragment : Fragment() {
         }
 
         viewModel.checkedTasksIdLiveData.observe(viewLifecycleOwner) {
+            println("checkedTasksIdLiveData: ${viewModel.checkedTasksIdLiveData.value}")
             binding.btnDeleteDoneTasks.visibility =
                 if (it.isNotEmpty()) View.VISIBLE else View.GONE
         }

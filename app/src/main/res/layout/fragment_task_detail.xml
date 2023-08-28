@@ -6,17 +6,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_gray"
     tools:context=".tasklist.ui.views.TaskDetailFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/black"
+        android:background="@color/deep_blue"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Todo Details"
-        app:titleTextColor="@color/light_gray"
+        app:titleTextColor="@android:color/white"
         app:titleTextStyle="@style/AppTheme" />
 
     <EditText

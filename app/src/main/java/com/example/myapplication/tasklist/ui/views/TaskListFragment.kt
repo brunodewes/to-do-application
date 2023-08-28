@@ -45,7 +45,6 @@ class TaskListFragment : Fragment() {
         }
 
         viewModel.checkedTasksIdLiveData.observe(viewLifecycleOwner) {
-            println("checkedTasksIdLiveData observer says: $it")
             binding.btnDeleteDoneTasks.visibility =
                 if (it.isNotEmpty()) View.VISIBLE else View.GONE
         }

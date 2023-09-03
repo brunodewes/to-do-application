@@ -18,7 +18,7 @@ class TaskListViewModel(
 ) : ViewModel() {
 
     private val taskListDTOLiveData: MutableLiveData<List<TaskDTO>> = MutableLiveData()
-    val checkedTasksIdLiveData: MutableLiveData<List<String>> = MutableLiveData()
+    private val checkedTasksIdLiveData: MutableLiveData<List<String>> = MutableLiveData()
     val taskListLiveData: MediatorLiveData<TaskListUiState> = MediatorLiveData()
 
     init {

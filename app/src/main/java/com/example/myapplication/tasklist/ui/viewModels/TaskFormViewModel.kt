@@ -6,8 +6,9 @@ import com.example.myapplication.repository.TaskDTO
 import com.example.myapplication.repository.TaskRepository
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TaskFormViewModel(
+class TaskFormViewModel @Inject constructor(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
 

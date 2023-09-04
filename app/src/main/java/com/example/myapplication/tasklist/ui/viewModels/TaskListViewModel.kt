@@ -8,14 +8,21 @@ import com.example.myapplication.repository.TaskDTO
 import com.example.myapplication.repository.TaskRepository
 import com.example.myapplication.tasklist.ui.data.TaskListUiState
 import com.example.myapplication.tasklist.mapper.TaskItemUiStateMapper
-import com.example.myapplication.tasklist.ui.data.TaskListUiEvent
+import com.example.myapplication.tasklist.ui.data.TaskListEvent
+import com.example.myapplication.tasklist.utils.Routes
+import com.example.myapplication.tasklist.utils.UiEvent
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class TaskListViewModel(
     private val taskRepository: TaskRepository,
     private val taskItemUiStateMapper: TaskItemUiStateMapper
 ) : ViewModel() {
+
+    private val _uiEvent = Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val taskListDTOLiveData: MutableLiveData<List<TaskDTO>> = MutableLiveData()
     private val checkedTasksIdLiveData: MutableLiveData<List<String>> = MutableLiveData()
@@ -53,18 +60,33 @@ class TaskListViewModel(
         return TaskListUiState(tasks)
     }
 
-    fun handleUiEvents(uiEvent: TaskListUiEvent) {
-        when (uiEvent) {
-            is TaskListUiEvent.OnCheckChanged -> {
+    fun onEvent(event: TaskListEvent) {
+        when (event) {
+            is TaskListEvent.OnCheckChanged -> {
                 updateTaskCheckStatus(
-                    taskId = uiEvent.taskId,
-                    isChecked = uiEvent.isChecked
+                    taskId = event.taskId,
+                    isChecked = event.isChecked
                 )
+            }
+            is TaskListEvent.DeleteDone -> {
+                deleteDone()
+            }
+            TaskListEvent.OnAddTaskClick -> {
+                sendUiEvent(UiEvent.Navigate(Routes.TASK_FORM))
+            }
+            is TaskListEvent.OnTaskClick -> {
+                sendUiEvent(UiEvent.Navigate(Routes.TASK_DETAIL + "?taskId=${event.taskId}"))
             }
         }
     }
 
-    fun deleteDone() {
+    private fun sendUiEvent(event: UiEvent) {
+        viewModelScope.launch {
+            _uiEvent.send(event)
+        }
+    }
+
+    private fun deleteDone() {
         viewModelScope.launch {
             checkedTasksIdLiveData.value?.forEach {
                 taskRepository

@@ -8,11 +8,6 @@ import android.view.ViewGroup
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myapplication.R
-import com.example.myapplication.databinding.FragmentTaskListBinding
-import com.example.myapplication.tasklist.ui.data.TaskListUiState
 import com.example.myapplication.tasklist.ui.viewModels.TaskListViewModel
 import com.example.myapplication.tasklist.ui.viewModels.TaskListViewModelFactory
 
@@ -35,7 +30,7 @@ class TaskListFragment : Fragment() {
                 screenState.value?.let { uiState ->
                     TaskListView(
                         uiState = uiState,
-                    ) { uiEvent -> viewModel.handleUiEvents(uiEvent) }
+                    ) { uiEvent -> viewModel.onEvent(uiEvent) }
                 }
             }
 //        binding = FragmentTaskListBinding.inflate(inflater, container, false)

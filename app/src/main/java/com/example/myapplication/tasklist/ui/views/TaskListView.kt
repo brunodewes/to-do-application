@@ -23,14 +23,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.myapplication.R
 import com.example.myapplication.tasklist.ui.data.TaskListItemUiState
-import com.example.myapplication.tasklist.ui.data.TaskListUiEvent
+import com.example.myapplication.tasklist.ui.data.TaskListEvent
 import com.example.myapplication.tasklist.ui.data.TaskListUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,7 +37,7 @@ import com.example.myapplication.tasklist.ui.data.TaskListUiState
 @Composable
 fun TaskListView(
     uiState: TaskListUiState,
-    onUiEvent: (TaskListUiEvent) -> Unit,
+    onUiEvent: (TaskListEvent) -> Unit,
 ) {
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -58,7 +57,7 @@ fun TaskListView(
                                 contentDescription = "Search todo"
                             )
                         }
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = { TaskListEvent.DeleteDone }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Remove done todos"
@@ -80,7 +79,7 @@ fun TaskListView(
             }
         },
         bottomBar = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { TaskListEvent.OnAddTaskClick }) {
                 Icon(
                     imageVector = Icons.Default.AddCircle,
                     contentDescription = "Add todo",
@@ -93,7 +92,7 @@ fun TaskListView(
 @Composable
 private fun TaskItem(
     uiState: TaskListItemUiState,
-    onUiEvent: (TaskListUiEvent) -> Unit,
+    onUiEvent: (TaskListEvent) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -116,7 +115,7 @@ private fun TaskItem(
         Checkbox(
             checked = uiState.isChecked,
             onCheckedChange = {
-                onUiEvent(TaskListUiEvent.OnCheckChanged(uiState.id, uiState.isChecked))
+                onUiEvent(TaskListEvent.OnCheckChanged(uiState.id, uiState.isChecked))
             },
         )
     }

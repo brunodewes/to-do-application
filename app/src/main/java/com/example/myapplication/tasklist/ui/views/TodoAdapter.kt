@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.tasklist.ui.data.TaskListItemUiState
 import com.example.myapplication.tasklist.ui.data.TaskListUiState
 import com.example.myapplication.databinding.ItemTodoBinding
-import com.example.myapplication.tasklist.ui.data.TaskListUiEvent
+import com.example.myapplication.tasklist.ui.data.TaskListEvent
 import com.example.myapplication.tasklist.ui.viewModels.TaskListViewModel
 
 class TodoAdapter(private val viewModel: TaskListViewModel) : RecyclerView.Adapter<TodoAdapter.TaskViewHolder>(){
@@ -46,7 +46,7 @@ class TodoAdapter(private val viewModel: TaskListViewModel) : RecyclerView.Adapt
             binding.cbDone.isChecked = task.isChecked
             toggleStrikeThrough(binding.tvTaskTitle, task.isChecked)
             binding.cbDone.setOnCheckedChangeListener { _, isChecked ->
-                viewModel.handleUiEvents(TaskListUiEvent.OnCheckChanged(getTaskIdAtPosition(bindingAdapterPosition), isChecked))
+                viewModel.onEvent(TaskListEvent.OnCheckChanged(getTaskIdAtPosition(bindingAdapterPosition), isChecked))
             }
         }
 

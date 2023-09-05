@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.databinding.FragmentTaskDetailBinding
 import com.example.myapplication.tasklist.ui.viewModels.TaskDetailViewModel
-import com.example.myapplication.tasklist.ui.viewModels.TaskDetailViewModelFactory
 
 class TaskDetailFragment : Fragment() {
 

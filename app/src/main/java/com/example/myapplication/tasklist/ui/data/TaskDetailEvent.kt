@@ -12,4 +12,6 @@ sealed class TaskDetailEvent {
         val taskDTO: TaskDTO
     ) : TaskDetailEvent()
 
+    object GoBack : TaskFormEvent()
+
 }

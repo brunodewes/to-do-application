@@ -15,14 +15,15 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TaskListViewModel(
+class TaskListViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val taskItemUiStateMapper: TaskItemUiStateMapper
 ) : ViewModel() {
 
     private val _uiEvent = Channel<UiEvent>()
-    val uiEvent = _uiEvent.receiveAsFlow()
+    private val uiEvent = _uiEvent.receiveAsFlow()
 
     private val taskListDTOLiveData: MutableLiveData<List<TaskDTO>> = MutableLiveData()
     private val checkedTasksIdLiveData: MutableLiveData<List<String>> = MutableLiveData()

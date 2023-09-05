@@ -38,7 +38,7 @@ import com.example.myapplication.tasklist.ui.data.TaskListUiState
 @Composable
 fun TaskListView(
     uiState: TaskListUiState,
-    onUiEvent: (TaskListEvent) -> Unit,
+    onEvent: (TaskListEvent) -> Unit,
 ) {
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -58,7 +58,7 @@ fun TaskListView(
                                 contentDescription = "Search todo"
                             )
                         }
-                        IconButton(onClick = { TaskListEvent.DeleteDone }) {
+                        IconButton(onClick = { onEvent(TaskListEvent.DeleteDone) }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Remove done todos"
@@ -74,13 +74,13 @@ fun TaskListView(
                 items(uiState.tasks) {
                     TaskItem(
                         uiState = it,
-                        onUiEvent = onUiEvent,
+                        onEvent = onEvent,
                     )
                 }
             }
         },
         bottomBar = {
-            FloatingActionButton(onClick = { TaskListEvent.OnAddTaskClick }) {
+            FloatingActionButton(onClick = { onEvent(TaskListEvent.OnAddTaskClick) }) {
                 Icon(
                     imageVector = Icons.Default.AddCircle,
                     contentDescription = "Add todo",
@@ -93,7 +93,7 @@ fun TaskListView(
 @Composable
 private fun TaskItem(
     uiState: TaskListItemUiState,
-    onUiEvent: (TaskListEvent) -> Unit,
+    onEvent: (TaskListEvent) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -116,7 +116,7 @@ private fun TaskItem(
         Checkbox(
             checked = uiState.isChecked,
             onCheckedChange = {
-                onUiEvent(TaskListEvent.OnCheckChanged(uiState.id, uiState.isChecked))
+                onEvent(TaskListEvent.OnCheckChanged(uiState.id, uiState.isChecked))
             },
         )
     }
@@ -136,6 +136,6 @@ private fun TaskListPreview() {
                 )
             )
         ),
-        onUiEvent = {},
+        onEvent = {},
     )
 }

@@ -8,22 +8,24 @@ import com.example.myapplication.repository.TaskDTO
 import com.example.myapplication.repository.TaskRepository
 import com.example.myapplication.tasklist.ui.data.TaskListUiState
 import com.example.myapplication.tasklist.mapper.TaskItemUiStateMapper
-import com.example.myapplication.tasklist.ui.data.TaskListEvent
+import com.example.myapplication.tasklist.ui.data.TaskListEvents
 import com.example.myapplication.tasklist.utils.Routes
-import com.example.myapplication.tasklist.utils.UiEvent
+import com.example.myapplication.tasklist.utils.UiEvents
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class TaskListViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val taskItemUiStateMapper: TaskItemUiStateMapper
 ) : ViewModel() {
 
-    private val _uiEvent = Channel<UiEvent>()
-    private val uiEvent = _uiEvent.receiveAsFlow()
+    private val _uiEvents = Channel<UiEvents>()
+    val uiEvent = _uiEvents.receiveAsFlow()
 
     private val taskListDTOLiveData: MutableLiveData<List<TaskDTO>> = MutableLiveData()
     private val checkedTasksIdLiveData: MutableLiveData<List<String>> = MutableLiveData()
@@ -61,29 +63,28 @@ class TaskListViewModel @Inject constructor(
         return TaskListUiState(tasks)
     }
 
-    fun onEvent(event: TaskListEvent) {
+    fun onEvent(event: TaskListEvents) {
         when (event) {
-            is TaskListEvent.OnCheckChanged -> {
+            is TaskListEvents.OnCheckChanged -> {
                 updateTaskCheckStatus(
                     taskId = event.taskId,
-                    isChecked = event.isChecked
                 )
             }
-            is TaskListEvent.DeleteDone -> {
+            is TaskListEvents.DeleteDone -> {
                 deleteDone()
             }
-            TaskListEvent.OnAddTaskClick -> {
-                sendUiEvent(UiEvent.Navigate(Routes.TASK_FORM))
+            TaskListEvents.OnAddTaskClick -> {
+                sendUiEvent(UiEvents.Navigate(Routes.TASK_FORM))
             }
-            is TaskListEvent.OnTaskClick -> {
-                sendUiEvent(UiEvent.Navigate(Routes.TASK_DETAIL + "?taskId=${event.taskId}"))
+            is TaskListEvents.OnTaskClick -> {
+                sendUiEvent(UiEvents.Navigate(Routes.TASK_DETAIL + "?taskId=${event.taskId}"))
             }
         }
     }
 
-    private fun sendUiEvent(event: UiEvent) {
+    private fun sendUiEvent(event: UiEvents) {
         viewModelScope.launch {
-            _uiEvent.send(event)
+            _uiEvents.send(event)
         }
     }
 
@@ -97,15 +98,15 @@ class TaskListViewModel @Inject constructor(
         }
     }
 
-
-    private fun updateTaskCheckStatus(taskId: String, isChecked: Boolean) {
+    private fun updateTaskCheckStatus(taskId: String) {
         val checkedTasksId = checkedTasksIdLiveData.value.orEmpty().toMutableList()
-        if (isChecked) {
-            checkedTasksId.add(taskId)
-        } else {
+        if (checkedTasksId.contains(taskId)) {
             checkedTasksId.remove(taskId)
+        } else {
+            checkedTasksId.add(taskId)
         }
         checkedTasksIdLiveData.value = checkedTasksId
+        println(checkedTasksIdLiveData.value)
     }
 
     private fun removeInvalidCheckedIds(tasks: List<TaskDTO>) {

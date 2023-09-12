@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,20 +31,22 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.myapplication.R
 import com.example.myapplication.tasklist.ui.data.TaskListItemUiState
-import com.example.myapplication.tasklist.ui.data.TaskListEvent
+import com.example.myapplication.tasklist.ui.data.TaskListEvents
 import com.example.myapplication.tasklist.ui.data.TaskListUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TaskListView(
+    onNavigateToForm: () -> Unit,
+    onEvent: (TaskListEvents) -> Unit,
     uiState: TaskListUiState,
-    onEvent: (TaskListEvent) -> Unit,
 ) {
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
         modifier = Modifier
+            .fillMaxHeight()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             Box {
@@ -58,7 +61,7 @@ fun TaskListView(
                                 contentDescription = "Search todo"
                             )
                         }
-                        IconButton(onClick = { onEvent(TaskListEvent.DeleteDone) }) {
+                        IconButton(onClick = { onEvent(TaskListEvents.DeleteDone) }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Remove done todos"
@@ -69,8 +72,19 @@ fun TaskListView(
                 )
             }
         },
-        content = {
-            LazyColumn {
+        floatingActionButton = {
+            FloatingActionButton(onClick = onNavigateToForm) {
+                Icon(
+                    imageVector = Icons.Default.AddCircle,
+                    contentDescription = "Add todo",
+                )
+            }
+        },
+        content = { innerPadding ->
+            LazyColumn(
+                modifier = Modifier
+                    .padding(innerPadding)
+            ) {
                 items(uiState.tasks) {
                     TaskItem(
                         uiState = it,
@@ -80,12 +94,7 @@ fun TaskListView(
             }
         },
         bottomBar = {
-            FloatingActionButton(onClick = { onEvent(TaskListEvent.OnAddTaskClick) }) {
-                Icon(
-                    imageVector = Icons.Default.AddCircle,
-                    contentDescription = "Add todo",
-                )
-            }
+
         }
     )
 }
@@ -93,7 +102,7 @@ fun TaskListView(
 @Composable
 private fun TaskItem(
     uiState: TaskListItemUiState,
-    onEvent: (TaskListEvent) -> Unit,
+    onEvent: (TaskListEvents) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -116,7 +125,8 @@ private fun TaskItem(
         Checkbox(
             checked = uiState.isChecked,
             onCheckedChange = {
-                onEvent(TaskListEvent.OnCheckChanged(uiState.id, uiState.isChecked))
+                onEvent(TaskListEvents.OnCheckChanged(uiState.id))
+                println(uiState.isChecked)
             },
         )
     }
@@ -131,11 +141,11 @@ private fun TaskListPreview() {
                 TaskListItemUiState(
                     id = "id",
                     title = "Title",
-                    description = "Description",
                     isChecked = true,
                 )
             )
         ),
         onEvent = {},
+        onNavigateToForm = {},
     )
 }

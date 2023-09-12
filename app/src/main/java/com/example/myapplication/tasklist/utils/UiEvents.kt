@@ -1,16 +1,16 @@
 package com.example.myapplication.tasklist.utils
 
-sealed class UiEvent{
+sealed class UiEvents{
 
-    object PopBackStack: UiEvent()
+    data object PopBackStack: UiEvents()
 
     data class Navigate(
         val route: String
-    ): UiEvent()
+    ): UiEvents()
 
     data class ShowSnackBar(
         val message: String,
         val action: String? = null,
-    ): UiEvent()
+    ): UiEvents()
 
 }

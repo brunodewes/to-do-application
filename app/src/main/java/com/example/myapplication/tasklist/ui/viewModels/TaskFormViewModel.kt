@@ -1,44 +1,66 @@
 package com.example.myapplication.tasklist.ui.viewModels
 
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.repository.TaskDTO
 import com.example.myapplication.repository.TaskRepository
-import com.example.myapplication.tasklist.ui.data.TaskFormEvent
-import com.example.myapplication.tasklist.utils.UiEvent
+import com.example.myapplication.tasklist.ui.data.TaskFormEvents
+import com.example.myapplication.tasklist.ui.data.TaskFormUiState
+import com.example.myapplication.tasklist.utils.UiEvents
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class TaskFormViewModel @Inject constructor(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
 
-    private val _uiEvent = Channel<UiEvent>()
-    private val uiEvent = _uiEvent.receiveAsFlow()
+    private val taskTitleLiveData: MutableLiveData<String> = MutableLiveData()
+    private val taskDescriptionLiveData: MutableLiveData<String> = MutableLiveData()
+    val taskFormLiveData: MediatorLiveData<TaskFormUiState> = MediatorLiveData()
 
-    fun onEvent(event: TaskFormEvent) {
-        when (event) {
-            is TaskFormEvent.AddTask -> {
-                if(event.title.isNotEmpty()) {
-                    addTask(title = event.title, description = event.description)
-                    sendUiEvent(UiEvent.PopBackStack)
-                }
-            }
-            TaskFormEvent.GoBack -> {
-                sendUiEvent(UiEvent.PopBackStack)
-            }
+    private val _uiEvents = Channel<UiEvents>()
+    private val uiEvent = _uiEvents.receiveAsFlow()
 
-            is TaskFormEvent.OnDescriptionChanged -> TODO()
-            is TaskFormEvent.OnTitleChanged -> TODO()
+    init {
+        taskFormLiveData.value = TaskFormUiState("", "")
+        taskFormLiveData.apply {
+            addSource(taskTitleLiveData) { taskTitle ->
+                this.value = TaskFormUiState(title = taskTitle, description = taskDescriptionLiveData.value.orEmpty())
+            }
+            addSource(taskDescriptionLiveData) { taskDescription ->
+                this.value = TaskFormUiState(title = taskTitleLiveData.value.orEmpty(), description = taskDescription)
+            }
         }
     }
 
-    private fun sendUiEvent(event: UiEvent) {
+    fun onEvent(event: TaskFormEvents) {
+        when (event) {
+            is TaskFormEvents.AddTask -> {
+                taskTitleLiveData.value?.let {
+                    if (it.isNotEmpty()) {
+                        addTask(title = it, description = taskDescriptionLiveData.value)
+                        sendUiEvent(UiEvents.PopBackStack)
+                    }
+                }
+            }
+            TaskFormEvents.GoBack -> {
+                sendUiEvent(UiEvents.PopBackStack)
+            }
+            is TaskFormEvents.OnTitleChanged -> taskTitleLiveData.postValue(event.title)
+            is TaskFormEvents.OnDescriptionChanged -> taskDescriptionLiveData.postValue(event.description)
+        }
+    }
+
+    private fun sendUiEvent(event: UiEvents) {
         viewModelScope.launch {
-            _uiEvent.send(event)
+            _uiEvents.send(event)
         }
     }
 

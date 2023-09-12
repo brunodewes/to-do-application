@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.take
 
 class TaskRepositoryImpl : TaskRepository {
 
-    private val _taskDTOListStream: MutableSharedFlow<List<TaskDTO>> =
+    private val taskDTOListStream: MutableSharedFlow<List<TaskDTO>> =
         MutableSharedFlow<List<TaskDTO>>(
             replay = 1
         ).apply {
@@ -15,32 +15,32 @@ class TaskRepositoryImpl : TaskRepository {
         }
 
     override fun getAllTasks(): Flow<List<TaskDTO>> {
-        return _taskDTOListStream
+        return taskDTOListStream
     }
 
     override fun addTask(taskDTO: TaskDTO): Flow<List<TaskDTO>> {
-        return _taskDTOListStream.take(1).onEach { currentTasks ->
+        return taskDTOListStream.take(1).onEach { currentTasks ->
             val newTaskList = currentTasks + taskDTO
-            _taskDTOListStream.emit(newTaskList)
+            taskDTOListStream.emit(newTaskList)
         }
     }
 
     override fun deleteTask(id: String): Flow<List<TaskDTO>> {
-        return _taskDTOListStream.take(1).onEach { currentTasks ->
+        return taskDTOListStream.take(1).onEach { currentTasks ->
             val newTaskList = currentTasks.filterNot { it.id == id }
-            _taskDTOListStream.emit(newTaskList)
+            taskDTOListStream.emit(newTaskList)
         }
     }
 
     override fun updateTask(taskDTO: TaskDTO): Flow<List<TaskDTO>> {
-        return _taskDTOListStream.take(1).onEach { currentTasks ->
+        return taskDTOListStream.take(1).onEach { currentTasks ->
             currentTasks.find { it.id == taskDTO.id }?.let { foundTask ->
                 foundTask.description = taskDTO.description
                 if (taskDTO.title.isNotEmpty()) {
                     foundTask.title = taskDTO.title
                 }
             }
-            _taskDTOListStream.emit(currentTasks)
+            taskDTOListStream.emit(currentTasks)
         }
     }
 }

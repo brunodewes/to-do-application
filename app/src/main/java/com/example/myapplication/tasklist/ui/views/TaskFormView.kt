@@ -1,12 +1,10 @@
 package com.example.myapplication.tasklist.ui.views
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
@@ -18,80 +16,73 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.tasklist.ui.data.TaskFormEvent
+import com.example.myapplication.tasklist.ui.data.TaskFormEvents
 import com.example.myapplication.tasklist.ui.data.TaskFormUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TaskFormView(
-    uiState: TaskFormUiState,
-    onEvent: (TaskFormEvent) -> Unit,
+    onPopBackStack: () -> Unit,
+    onEvent: (TaskFormEvents) -> Unit,
+    uiState: TaskFormUiState
 ) {
+
     Scaffold(
         topBar = {
-            Box {
-                TopAppBar(
-                    title = {
+            TopAppBar(
+                title = {
 
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { onEvent(TaskFormEvent.GoBack) }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Go back",
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = {
-                            onEvent(
-                                TaskFormEvent.AddTask(
-                                    title = uiState.title,
-                                    description = uiState.description,
-                                )
-                            )
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Done, contentDescription = "Add todo",
-                            )
-                        }
-                    },
-                )
-            }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onPopBackStack) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Go back",
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        onEvent(TaskFormEvents.AddTask)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Done, contentDescription = "Add todo",
+                        )
+                    }
+                },
+            )
         },
-        content = {
+        content = { innerPadding ->
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .padding(innerPadding),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 TextField(
                     value = uiState.title,
                     onValueChange = {
-                        onEvent(TaskFormEvent.OnTitleChanged(it))
+                        onEvent(TaskFormEvents.OnTitleChanged(it))
                     },
                     placeholder = {
                         Text(text = "Title")
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
-                Spacer(modifier = Modifier.height(40.dp))
                 TextField(
-                    value = uiState.description.orEmpty(),
+                    value = uiState.description,
                     onValueChange = {
-                        onEvent(TaskFormEvent.OnDescriptionChanged(it))
+                        onEvent(TaskFormEvents.OnDescriptionChanged(it))
                     },
                     placeholder = {
                         Text(text = "Description")
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = false,
+                    singleLine = false
                 )
             }
         },
@@ -104,5 +95,12 @@ fun TaskFormView(
 @Preview
 @Composable
 private fun TaskFormPreview() {
-    TaskFormView(onEvent = {})
+    TaskFormView(
+        onEvent = {},
+        uiState = TaskFormUiState(
+            title = "Title",
+            description = "Description"
+        ),
+        onPopBackStack = {}
+    )
 }

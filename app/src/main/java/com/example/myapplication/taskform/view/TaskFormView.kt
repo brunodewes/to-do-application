@@ -1,6 +1,5 @@
-package com.example.myapplication.tasklist.ui.views
+package com.example.myapplication.taskform.view
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,16 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.tasklist.ui.data.TaskFormEvents
-import com.example.myapplication.tasklist.ui.data.TaskFormUiState
+import com.example.myapplication.taskform.data.TaskFormUiEvents
+import com.example.myapplication.taskform.data.TaskFormUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TaskFormView(
-    onPopBackStack: () -> Unit,
-    onEvent: (TaskFormEvents) -> Unit,
-    uiState: TaskFormUiState
+    uiState: TaskFormUiState,
+    onUiEvent: (TaskFormUiEvents) -> Unit
 ) {
 
     Scaffold(
@@ -38,7 +35,7 @@ fun TaskFormView(
 
                 },
                 navigationIcon = {
-                    IconButton(onClick = onPopBackStack) {
+                    IconButton(onClick = { onUiEvent(TaskFormUiEvents.GoBack) }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Go back",
@@ -46,9 +43,7 @@ fun TaskFormView(
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        onEvent(TaskFormEvents.AddTask)
-                    }) {
+                    IconButton(onClick = { onUiEvent(TaskFormUiEvents.AddTask) }) {
                         Icon(
                             imageVector = Icons.Default.Done, contentDescription = "Add todo",
                         )
@@ -65,7 +60,7 @@ fun TaskFormView(
                 TextField(
                     value = uiState.title,
                     onValueChange = {
-                        onEvent(TaskFormEvents.OnTitleChanged(it))
+                        onUiEvent(TaskFormUiEvents.OnTitleChanged(it))
                     },
                     placeholder = {
                         Text(text = "Title")
@@ -76,7 +71,7 @@ fun TaskFormView(
                 TextField(
                     value = uiState.description,
                     onValueChange = {
-                        onEvent(TaskFormEvents.OnDescriptionChanged(it))
+                        onUiEvent(TaskFormUiEvents.OnDescriptionChanged(it))
                     },
                     placeholder = {
                         Text(text = "Description")
@@ -96,11 +91,10 @@ fun TaskFormView(
 @Composable
 private fun TaskFormPreview() {
     TaskFormView(
-        onEvent = {},
         uiState = TaskFormUiState(
             title = "Title",
             description = "Description"
         ),
-        onPopBackStack = {}
+        onUiEvent = {}
     )
 }

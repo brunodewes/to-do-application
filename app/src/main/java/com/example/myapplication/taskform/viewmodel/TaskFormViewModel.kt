@@ -1,18 +1,16 @@
-package com.example.myapplication.tasklist.ui.viewModels
+package com.example.myapplication.taskform.viewmodel
 
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.navigation.NavigationModel
 import com.example.myapplication.repository.TaskDTO
 import com.example.myapplication.repository.TaskRepository
-import com.example.myapplication.tasklist.ui.data.TaskFormEvents
-import com.example.myapplication.tasklist.ui.data.TaskFormUiState
-import com.example.myapplication.tasklist.utils.UiEvents
+import com.example.myapplication.taskform.data.TaskFormUiEvents
+import com.example.myapplication.taskform.data.TaskFormUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,8 +23,7 @@ class TaskFormViewModel @Inject constructor(
     private val taskDescriptionLiveData: MutableLiveData<String> = MutableLiveData()
     val taskFormLiveData: MediatorLiveData<TaskFormUiState> = MediatorLiveData()
 
-    private val _uiEvents = Channel<UiEvents>()
-    private val uiEvent = _uiEvents.receiveAsFlow()
+    val navigationStream: MutableLiveData<NavigationModel> = MutableLiveData()
 
     init {
         taskFormLiveData.value = TaskFormUiState("", "")
@@ -40,27 +37,21 @@ class TaskFormViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: TaskFormEvents) {
+    fun handleUiEvents(event: TaskFormUiEvents) {
         when (event) {
-            is TaskFormEvents.AddTask -> {
+            is TaskFormUiEvents.AddTask -> {
                 taskTitleLiveData.value?.let {
                     if (it.isNotEmpty()) {
                         addTask(title = it, description = taskDescriptionLiveData.value)
-                        sendUiEvent(UiEvents.PopBackStack)
+                        navigationStream.postValue(NavigationModel.NavigateBack)
                     }
                 }
             }
-            TaskFormEvents.GoBack -> {
-                sendUiEvent(UiEvents.PopBackStack)
+            TaskFormUiEvents.GoBack -> {
+                navigationStream.postValue(NavigationModel.NavigateBack)
             }
-            is TaskFormEvents.OnTitleChanged -> taskTitleLiveData.postValue(event.title)
-            is TaskFormEvents.OnDescriptionChanged -> taskDescriptionLiveData.postValue(event.description)
-        }
-    }
-
-    private fun sendUiEvent(event: UiEvents) {
-        viewModelScope.launch {
-            _uiEvents.send(event)
+            is TaskFormUiEvents.OnTitleChanged -> taskTitleLiveData.postValue(event.title)
+            is TaskFormUiEvents.OnDescriptionChanged -> taskDescriptionLiveData.postValue(event.description)
         }
     }
 

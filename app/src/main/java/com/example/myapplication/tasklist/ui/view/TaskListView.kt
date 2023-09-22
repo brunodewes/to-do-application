@@ -1,6 +1,5 @@
-package com.example.myapplication.tasklist.ui.views
+package com.example.myapplication.tasklist.ui.view
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -31,16 +30,14 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.myapplication.R
 import com.example.myapplication.tasklist.ui.data.TaskListItemUiState
-import com.example.myapplication.tasklist.ui.data.TaskListEvents
+import com.example.myapplication.tasklist.ui.data.TaskListUiEvents
 import com.example.myapplication.tasklist.ui.data.TaskListUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TaskListView(
-    onNavigateToForm: () -> Unit,
-    onEvent: (TaskListEvents) -> Unit,
     uiState: TaskListUiState,
+    onUiEvent: (TaskListUiEvents) -> Unit,
 ) {
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -61,7 +58,7 @@ fun TaskListView(
                                 contentDescription = "Search todo"
                             )
                         }
-                        IconButton(onClick = { onEvent(TaskListEvents.DeleteDone) }) {
+                        IconButton(onClick = { onUiEvent(TaskListUiEvents.DeleteDone) }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Remove done todos"
@@ -73,7 +70,7 @@ fun TaskListView(
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onNavigateToForm) {
+            FloatingActionButton(onClick = { onUiEvent(TaskListUiEvents.OnAddTaskClick) }) {
                 Icon(
                     imageVector = Icons.Default.AddCircle,
                     contentDescription = "Add todo",
@@ -88,7 +85,7 @@ fun TaskListView(
                 items(uiState.tasks) {
                     TaskItem(
                         uiState = it,
-                        onEvent = onEvent,
+                        onEvent = onUiEvent,
                     )
                 }
             }
@@ -102,7 +99,7 @@ fun TaskListView(
 @Composable
 private fun TaskItem(
     uiState: TaskListItemUiState,
-    onEvent: (TaskListEvents) -> Unit,
+    onEvent: (TaskListUiEvents) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -125,7 +122,7 @@ private fun TaskItem(
         Checkbox(
             checked = uiState.isChecked,
             onCheckedChange = {
-                onEvent(TaskListEvents.OnCheckChanged(uiState.id))
+                onEvent(TaskListUiEvents.OnCheckChanged(uiState.id))
                 println(uiState.isChecked)
             },
         )
@@ -145,7 +142,6 @@ private fun TaskListPreview() {
                 )
             )
         ),
-        onEvent = {},
-        onNavigateToForm = {},
+        onUiEvent = {},
     )
 }

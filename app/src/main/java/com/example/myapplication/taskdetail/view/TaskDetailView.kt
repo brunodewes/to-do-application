@@ -1,4 +1,4 @@
-package com.example.myapplication.tasklist.ui.views
+package com.example.myapplication.taskdetail.view
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
@@ -13,8 +13,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.myapplication.tasklist.ui.data.TaskDetailEvents
-import com.example.myapplication.tasklist.ui.viewModels.TaskFormViewModel
+import com.example.myapplication.taskdetail.data.TaskDetailEvents
+import com.example.myapplication.taskform.viewmodel.TaskFormViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

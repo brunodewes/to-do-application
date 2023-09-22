@@ -4,8 +4,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
+import javax.inject.Inject
 
-class TaskRepositoryImpl : TaskRepository {
+
+class TaskRepositoryImpl @Inject constructor() : TaskRepository {
 
     private val taskDTOListStream: MutableSharedFlow<List<TaskDTO>> =
         MutableSharedFlow<List<TaskDTO>>(

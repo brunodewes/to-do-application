@@ -1,20 +1,17 @@
-package com.example.myapplication.tasklist.ui.viewModels
+package com.example.myapplication.tasklist.ui.viewmodel
 
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.navigation.NavigationModel
 import com.example.myapplication.repository.TaskDTO
 import com.example.myapplication.repository.TaskRepository
 import com.example.myapplication.tasklist.ui.data.TaskListUiState
 import com.example.myapplication.tasklist.mapper.TaskItemUiStateMapper
-import com.example.myapplication.tasklist.ui.data.TaskListEvents
-import com.example.myapplication.tasklist.utils.Routes
-import com.example.myapplication.tasklist.utils.UiEvents
+import com.example.myapplication.tasklist.ui.data.TaskListUiEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,12 +21,11 @@ class TaskListViewModel @Inject constructor(
     private val taskItemUiStateMapper: TaskItemUiStateMapper
 ) : ViewModel() {
 
-    private val _uiEvents = Channel<UiEvents>()
-    val uiEvent = _uiEvents.receiveAsFlow()
-
     private val taskListDTOLiveData: MutableLiveData<List<TaskDTO>> = MutableLiveData()
     private val checkedTasksIdLiveData: MutableLiveData<List<String>> = MutableLiveData()
     val taskListLiveData: MediatorLiveData<TaskListUiState> = MediatorLiveData()
+
+    val navigationStream: MutableLiveData<NavigationModel> = MutableLiveData()
 
     init {
         taskListLiveData.apply {
@@ -63,28 +59,20 @@ class TaskListViewModel @Inject constructor(
         return TaskListUiState(tasks)
     }
 
-    fun onEvent(event: TaskListEvents) {
+    fun handleUiEvents(event: TaskListUiEvents) {
         when (event) {
-            is TaskListEvents.OnCheckChanged -> {
+            is TaskListUiEvents.OnCheckChanged -> {
                 updateTaskCheckStatus(
                     taskId = event.taskId,
                 )
             }
-            is TaskListEvents.DeleteDone -> {
+            TaskListUiEvents.DeleteDone -> {
                 deleteDone()
             }
-            TaskListEvents.OnAddTaskClick -> {
-                sendUiEvent(UiEvents.Navigate(Routes.TASK_FORM))
+            TaskListUiEvents.OnAddTaskClick -> {
+                navigationStream.postValue(NavigationModel.CreateTask)
             }
-            is TaskListEvents.OnTaskClick -> {
-                sendUiEvent(UiEvents.Navigate(Routes.TASK_DETAIL + "?taskId=${event.taskId}"))
-            }
-        }
-    }
-
-    private fun sendUiEvent(event: UiEvents) {
-        viewModelScope.launch {
-            _uiEvents.send(event)
+            is TaskListUiEvents.OnTaskClick -> TODO()
         }
     }
 
@@ -115,9 +103,5 @@ class TaskListViewModel @Inject constructor(
 
         val validCheckedIds = checkedIds.filter { taskId -> taskIds.contains(taskId) }
         checkedTasksIdLiveData.postValue(validCheckedIds)
-    }
-
-    fun setTaskList(): TaskListUiState {
-        return taskListLiveData.value ?: TaskListUiState(emptyList())
     }
 }

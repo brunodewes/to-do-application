@@ -1,4 +1,4 @@
-package com.example.myapplication.tasklist.ui.data
+package com.example.myapplication.taskform.data
 
 data class TaskFormUiState(
     val title: String,

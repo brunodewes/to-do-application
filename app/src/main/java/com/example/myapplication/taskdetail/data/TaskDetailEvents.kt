@@ -1,4 +1,4 @@
-package com.example.myapplication.tasklist.ui.data
+package com.example.myapplication.taskdetail.data
 
 import com.example.myapplication.repository.TaskDTO
 
@@ -12,6 +12,6 @@ sealed class TaskDetailEvents {
         val taskDTO: TaskDTO
     ) : TaskDetailEvents()
 
-    object GoBack : TaskDetailEvents()
+    data object GoBack : TaskDetailEvents()
 
 }

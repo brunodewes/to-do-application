@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TaskFormViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
 ) : ViewModel() {
 
     private val taskTitleLiveData: MutableLiveData<String> = MutableLiveData()
@@ -50,8 +50,12 @@ class TaskFormViewModel @Inject constructor(
             TaskFormUiEvents.GoBack -> {
                 navigationStream.postValue(NavigationModel.NavigateBack)
             }
-            is TaskFormUiEvents.OnTitleChanged -> taskTitleLiveData.postValue(event.title)
-            is TaskFormUiEvents.OnDescriptionChanged -> taskDescriptionLiveData.postValue(event.description)
+            is TaskFormUiEvents.OnTitleChanged -> {
+                taskTitleLiveData.postValue(event.title)
+            }
+            is TaskFormUiEvents.OnDescriptionChanged -> {
+                taskDescriptionLiveData.postValue(event.description)
+            }
         }
     }
 

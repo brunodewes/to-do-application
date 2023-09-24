@@ -4,17 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.example.myapplication.navigation.NavigationPerformer
+import com.example.myapplication.taskdetail.viewmodel.TaskDetailViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class TaskDetailFragment : Fragment() {
-    private lateinit var taskId: String
+    @Inject
+    lateinit var navigationPerformer: NavigationPerformer
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        taskId = requireArguments().getString("taskId") as String
-    }
+    private val viewModel: TaskDetailViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,8 +27,21 @@ class TaskDetailFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-//                TaskDetailView()
+                val screenState = viewModel.taskDetailLiveData.observeAsState()
+                screenState.value?.let { uiState ->
+                    TaskDetailView(
+                        uiState = uiState,
+                        onUiEvent = { uiEvent -> viewModel.handleUiEvents(uiEvent) }
+                    )
+                }
             }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.navigationStream.observe(viewLifecycleOwner) {
+            navigationPerformer.navigateTo(it)
         }
     }
 }

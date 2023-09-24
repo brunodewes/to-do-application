@@ -1,8 +1,10 @@
 package com.example.myapplication.navigation
 
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.example.myapplication.R
+import com.example.myapplication.taskdetail.view.TaskDetailFragment
 import com.example.myapplication.taskform.view.TaskFormFragment
 
 class NavigationPerformerImpl(
@@ -12,6 +14,7 @@ class NavigationPerformerImpl(
         when (navigationModel) {
             NavigationModel.CreateTask -> navigateToTaskForm()
             NavigationModel.NavigateBack -> navigateBack()
+            is NavigationModel.TaskClick -> navigateToTaskDetail(navigationModel.taskId)
         }
     }
 
@@ -25,6 +28,13 @@ class NavigationPerformerImpl(
 
     private fun navigateToTaskForm() {
         navigateToFragment(TaskFormFragment())
+    }
+
+    private fun navigateToTaskDetail(taskId: String) {
+        val fragment = TaskDetailFragment().apply {
+            arguments = bundleOf(VIEW_MODEL_ARGUMENTS to taskId)
+        }
+        navigateToFragment(fragment)
     }
 
     private fun navigateToFragment(fragment: Fragment) {

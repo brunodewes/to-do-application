@@ -62,9 +62,7 @@ class TaskListViewModel @Inject constructor(
     fun handleUiEvents(event: TaskListUiEvents) {
         when (event) {
             is TaskListUiEvents.OnCheckChanged -> {
-                updateTaskCheckStatus(
-                    taskId = event.taskId,
-                )
+                updateTaskCheckStatus(event.taskId,)
             }
             TaskListUiEvents.DeleteDone -> {
                 deleteDone()
@@ -72,7 +70,9 @@ class TaskListViewModel @Inject constructor(
             TaskListUiEvents.OnAddTaskClick -> {
                 navigationStream.postValue(NavigationModel.CreateTask)
             }
-            is TaskListUiEvents.OnTaskClick -> TODO()
+            is TaskListUiEvents.OnTaskClick -> {
+                navigationStream.postValue(NavigationModel.TaskClick(event.taskId))
+            }
         }
     }
 

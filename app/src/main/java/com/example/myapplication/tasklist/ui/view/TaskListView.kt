@@ -1,6 +1,7 @@
 package com.example.myapplication.tasklist.ui.view
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -69,14 +70,6 @@ fun TaskListView(
                 )
             }
         },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { onUiEvent(TaskListUiEvents.OnAddTaskClick) }) {
-                Icon(
-                    imageVector = Icons.Default.AddCircle,
-                    contentDescription = "Add todo",
-                )
-            }
-        },
         content = { innerPadding ->
             LazyColumn(
                 modifier = Modifier
@@ -85,9 +78,17 @@ fun TaskListView(
                 items(uiState.tasks) {
                     TaskItem(
                         uiState = it,
-                        onEvent = onUiEvent,
+                        onUiEvent = onUiEvent,
                     )
                 }
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { onUiEvent(TaskListUiEvents.OnAddTaskClick) }) {
+                Icon(
+                    imageVector = Icons.Default.AddCircle,
+                    contentDescription = "Add todo",
+                )
             }
         },
         bottomBar = {
@@ -99,7 +100,7 @@ fun TaskListView(
 @Composable
 private fun TaskItem(
     uiState: TaskListItemUiState,
-    onEvent: (TaskListUiEvents) -> Unit,
+    onUiEvent: (TaskListUiEvents) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -111,7 +112,10 @@ private fun TaskItem(
             .padding(
                 horizontal = dimensionResource(id = R.dimen.task_item_horizontal_padding),
                 vertical = dimensionResource(id = R.dimen.task_item_vertical_padding),
-            ),
+            )
+            .clickable {
+                onUiEvent(TaskListUiEvents.OnTaskClick(taskId = uiState.id))
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -122,7 +126,7 @@ private fun TaskItem(
         Checkbox(
             checked = uiState.isChecked,
             onCheckedChange = {
-                onEvent(TaskListUiEvents.OnCheckChanged(uiState.id))
+                onUiEvent(TaskListUiEvents.OnCheckChanged(uiState.id))
                 println(uiState.isChecked)
             },
         )

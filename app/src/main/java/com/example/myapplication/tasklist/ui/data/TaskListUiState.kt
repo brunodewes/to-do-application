@@ -6,6 +6,7 @@ data class TaskListUiState(
 
 data class TaskListItemUiState(
     val title: String,
+    val description: String?,
     val isChecked: Boolean,
     val id: String
 )

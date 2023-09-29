@@ -8,6 +8,7 @@ class TaskItemUiStateMapperImpl @Inject constructor() : TaskItemUiStateMapper {
     override fun mapToUiState(taskDTO: TaskDTO, checkedTasksId: List<String>): TaskListItemUiState {
         return TaskListItemUiState(
             title = taskDTO.title,
+            description = taskDTO.description,
             id = taskDTO.id,
             isChecked = checkedTasksId.contains(taskDTO.id)
         )

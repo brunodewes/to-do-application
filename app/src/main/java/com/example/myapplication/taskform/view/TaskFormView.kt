@@ -97,7 +97,7 @@ fun TaskFormView(
                             Text(
                                 text = "Title",
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Gray,
+                                color = colorResource(id = R.color.primary_text_color),
                                 fontSize = 30.sp
                             )
                         },
@@ -135,7 +135,7 @@ fun TaskFormView(
                         placeholder = {
                             Text(
                                 text = "Description",
-                                color = Color.Gray,
+                                color = colorResource(id = R.color.secondary_text_color),
                                 fontSize = 15.sp
                             )
                         },

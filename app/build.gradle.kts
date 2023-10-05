@@ -73,9 +73,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-    implementation("androidx.recyclerview:recyclerview:1.3.1")
     implementation("androidx.navigation:navigation-compose:2.7.3")
-    implementation("androidx.compose.runtime:runtime-livedata:1.5.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
     //hilt
@@ -85,9 +83,9 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0-alpha01")
 
     //rxjava
-//    implementation("io.reactivex.rxjava3:rxjava:3.1.6")
-//    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
-//    implementation("androidx.compose.runtime:runtime-rxjava3:1.5.0")
+    implementation("io.reactivex.rxjava3:rxjava:3.1.6")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
+    implementation("androidx.compose.runtime:runtime-rxjava3:1.5.2")
 }
 
 kapt {

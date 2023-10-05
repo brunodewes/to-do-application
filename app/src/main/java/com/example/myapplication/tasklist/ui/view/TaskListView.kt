@@ -38,6 +38,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,6 +54,7 @@ fun TaskListView(
     onUiEvent: (TaskListUiEvents) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
 
     Box(modifier = Modifier.background(color = colorResource(id = R.color.primary_color))) {
         Scaffold(
@@ -77,12 +79,14 @@ fun TaskListView(
                                     contentDescription = "Search todo"
                                 )
                             }
-                            IconButton(onClick = { onUiEvent(TaskListUiEvents.DeleteDone) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    tint = colorResource(id = R.color.secondary_color),
-                                    contentDescription = "Remove done todos"
-                                )
+                            if(uiState.isDeleteButtonActive) {
+                                IconButton(onClick = { onUiEvent(TaskListUiEvents.DeleteDone) }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        tint = colorResource(id = R.color.secondary_color),
+                                        contentDescription = "Remove done todos"
+                                    )
+                                }
                             }
                         },
                         scrollBehavior = scrollBehavior
@@ -159,12 +163,14 @@ private fun TaskItem(
                 Text(
                     text = uiState.title,
                     fontWeight = FontWeight.Bold,
+                    textDecoration = if (uiState.isChecked) TextDecoration.LineThrough else TextDecoration.None,
                     color = colorResource(id = R.color.primary_text_color),
                     fontSize = 25.sp
                 )
                 Text(
                     modifier = Modifier.padding(top = 5.dp),
                     text = uiState.description.orEmpty(),
+                    textDecoration = if (uiState.isChecked) TextDecoration.LineThrough else TextDecoration.None,
                     color = colorResource(id = R.color.secondary_text_color),
                     fontSize = 12.sp
                 )
@@ -175,9 +181,12 @@ private fun TaskItem(
                     checkmarkColor = colorResource(id = R.color.secondary_color),
                     uncheckedColor = colorResource(id = R.color.tertiary_color),
                 ),
-                checked = uiState.isChecked, onCheckedChange = {
+                checked = uiState.isChecked,
+                onCheckedChange = {
+                    print("Check Changed: Task ${uiState.title} isChecked = ${uiState.isChecked}")
                     onUiEvent(TaskListUiEvents.OnCheckChanged(uiState.id))
-                })
+                }
+            )
         }
     }
 }
@@ -194,7 +203,8 @@ private fun TaskListPreview() {
                     description = "Description",
                     isChecked = true,
                 )
-            )
+            ),
+            isDeleteButtonActive = true
         ),
         onUiEvent = {},
     )

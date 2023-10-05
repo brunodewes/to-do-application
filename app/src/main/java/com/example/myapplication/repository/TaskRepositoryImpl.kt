@@ -1,48 +1,36 @@
 package com.example.myapplication.repository
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import javax.inject.Inject
 
 
 class TaskRepositoryImpl @Inject constructor() : TaskRepository {
 
-    private val taskDTOListStream: MutableSharedFlow<List<TaskDTO>> =
-        MutableSharedFlow<List<TaskDTO>>(
-            replay = 1
-        ).apply {
-            tryEmit(emptyList())
-        }
+    private val taskDTOListStream = BehaviorSubject.createDefault<List<TaskDTO>>(emptyList())
 
-    override fun getAllTasks(): Flow<List<TaskDTO>> {
+    override fun getAllTasks(): Observable<List<TaskDTO>> {
         return taskDTOListStream
     }
 
-    override fun addTask(taskDTO: TaskDTO): Flow<List<TaskDTO>> {
-        return taskDTOListStream.take(1).onEach { currentTasks ->
-            val newTaskList = currentTasks + taskDTO
-            taskDTOListStream.emit(newTaskList)
-        }
+    override fun addTask(taskDTO: TaskDTO) {
+        val newTaskList = taskDTOListStream.value?.plus(taskDTO)
+        taskDTOListStream.onNext(newTaskList)
     }
 
-    override fun deleteTask(id: String): Flow<List<TaskDTO>> {
-        return taskDTOListStream.take(1).onEach { currentTasks ->
-            val newTaskList = currentTasks.filterNot { it.id == id }
-            taskDTOListStream.emit(newTaskList)
-        }
+    override fun deleteTask(id: String) {
+        val newTaskList = taskDTOListStream.value?.filterNot { it.id == id }
+        taskDTOListStream.onNext(newTaskList)
     }
 
-    override fun updateTask(taskDTO: TaskDTO): Flow<List<TaskDTO>> {
-        return taskDTOListStream.take(1).onEach { currentTasks ->
-            currentTasks.find { it.id == taskDTO.id }?.let { foundTask ->
+    override fun updateTask(taskDTO: TaskDTO) {
+        val newTaskList = taskDTOListStream.value
+        newTaskList?.find { it.id == taskDTO.id }?.let { foundTask ->
+            if (taskDTO.title.isNotEmpty()) {
+                foundTask.title = taskDTO.title
                 foundTask.description = taskDTO.description
-                if (taskDTO.title.isNotEmpty()) {
-                    foundTask.title = taskDTO.title
-                }
             }
-            taskDTOListStream.emit(currentTasks)
         }
+        taskDTOListStream.onNext(newTaskList)
     }
 }

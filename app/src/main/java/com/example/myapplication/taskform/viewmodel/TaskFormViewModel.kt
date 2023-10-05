@@ -1,17 +1,16 @@
 package com.example.myapplication.taskform.viewmodel
 
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.myapplication.navigation.NavigationModel
 import com.example.myapplication.repository.TaskDTO
 import com.example.myapplication.repository.TaskRepository
 import com.example.myapplication.taskform.data.TaskFormUiEvents
 import com.example.myapplication.taskform.data.TaskFormUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,52 +18,60 @@ class TaskFormViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
 ) : ViewModel() {
 
-    private val taskTitleLiveData: MutableLiveData<String> = MutableLiveData()
-    private val taskDescriptionLiveData: MutableLiveData<String> = MutableLiveData()
-    val taskFormLiveData: MediatorLiveData<TaskFormUiState> = MediatorLiveData()
+    private val taskTitleStream: BehaviorSubject<String> = BehaviorSubject.createDefault("")
+    private val taskDescriptionStream: BehaviorSubject<String> = BehaviorSubject.createDefault("")
+    private val disposables: MutableList<Disposable> = mutableListOf()
 
-    val navigationStream: MutableLiveData<NavigationModel> = MutableLiveData()
+    val navigationStream: PublishSubject<NavigationModel> = PublishSubject.create()
 
-    init {
-        taskFormLiveData.value = TaskFormUiState("", "")
-        taskFormLiveData.apply {
-            addSource(taskTitleLiveData) { taskTitle ->
-                this.value = TaskFormUiState(title = taskTitle, description = taskDescriptionLiveData.value.orEmpty())
-            }
-            addSource(taskDescriptionLiveData) { taskDescription ->
-                this.value = TaskFormUiState(title = taskTitleLiveData.value.orEmpty(), description = taskDescription)
-            }
+    fun buildUiStateStream(): Observable<TaskFormUiState> {
+        return Observable.combineLatest(
+            taskTitleStream.distinctUntilChanged(),
+            taskDescriptionStream.distinctUntilChanged(),
+        ) { title, description ->
+            TaskFormUiState(
+                title = title,
+                description = description,
+            )
         }
     }
 
-    fun handleUiEvents(event: TaskFormUiEvents) {
-        when (event) {
+    fun handleUiEvents(uiEvent: TaskFormUiEvents) {
+        when (uiEvent) {
             is TaskFormUiEvents.AddTask -> {
-                taskTitleLiveData.value?.let {
+                taskTitleStream.value?.let {
                     if (it.isNotEmpty()) {
-                        addTask(title = it, description = taskDescriptionLiveData.value)
-                        navigationStream.postValue(NavigationModel.NavigateBack)
+                        createTask()
+                        navigationStream.onNext(NavigationModel.NavigateBack)
                     }
                 }
             }
             TaskFormUiEvents.GoBack -> {
-                navigationStream.postValue(NavigationModel.NavigateBack)
+                navigationStream.onNext(NavigationModel.NavigateBack)
             }
             is TaskFormUiEvents.OnTitleChanged -> {
-                taskTitleLiveData.postValue(event.title)
+                taskTitleStream.onNext(uiEvent.title)
             }
             is TaskFormUiEvents.OnDescriptionChanged -> {
-                taskDescriptionLiveData.postValue(event.description)
+                taskDescriptionStream.onNext(uiEvent.description)
             }
         }
     }
 
-    private fun addTask(title: String, description: String?) {
-        viewModelScope.launch {
-            taskRepository
-                .addTask(TaskDTO(title = title, description = description, id = generateRandomId()))
-                .collect()
-        }
+    private fun createTask() {
+        Observable.combineLatest(
+            taskTitleStream.take(1),
+            taskDescriptionStream.take(1),
+            ::Pair,
+        ).subscribe { (title, description) ->
+            taskRepository.addTask(
+                TaskDTO(
+                    id = generateRandomId(),
+                    title = title,
+                    description = description,
+                )
+            )
+        }.apply { disposables.add(this) }
     }
 
     private fun generateRandomId(): String {
@@ -75,4 +82,10 @@ class TaskFormViewModel @Inject constructor(
             .joinToString("")
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        disposables.forEach {
+            if(!it.isDisposed) it.dispose()
+        }
+    }
 }

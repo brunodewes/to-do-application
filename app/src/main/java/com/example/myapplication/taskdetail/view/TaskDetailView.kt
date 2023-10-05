@@ -17,12 +17,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -34,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 import com.example.myapplication.taskdetail.data.TaskDetailUiEvents
 import com.example.myapplication.taskdetail.data.TaskDetailUiState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -42,7 +47,12 @@ fun TaskDetailView(
     uiState: TaskDetailUiState,
     onUiEvent: (TaskDetailUiEvents) -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         topBar = {
             Column {
                 TopAppBar(
@@ -70,7 +80,15 @@ fun TaskDetailView(
                                 contentDescription = "Delete todo",
                             )
                         }
-                        IconButton(onClick = { onUiEvent(TaskDetailUiEvents.UpdateTask) }) {
+                        IconButton(onClick = {
+                            onUiEvent(TaskDetailUiEvents.UpdateTask)
+                            if(uiState.isEmptyTitleSnackBarActive) {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("Title can't be empty")
+                                }
+                                uiState.isEmptyTitleSnackBarActive = false
+                            }
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.Done,
                                 tint = colorResource(id = R.color.secondary_color),
@@ -145,7 +163,7 @@ fun TaskDetailView(
                             Text(
                                 text = "Description",
                                 color = colorResource(id = R.color.secondary_text_color),
-                                fontSize = 15.sp
+                                fontSize = 15.sp,
                             )
                         },
                         textStyle = TextStyle(

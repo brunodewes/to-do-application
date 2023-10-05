@@ -1,18 +1,17 @@
 package com.example.myapplication.tasklist.ui.viewmodel
 
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.myapplication.navigation.NavigationModel
-import com.example.myapplication.repository.TaskDTO
 import com.example.myapplication.repository.TaskRepository
 import com.example.myapplication.tasklist.ui.data.TaskListUiState
 import com.example.myapplication.tasklist.mapper.TaskItemUiStateMapper
 import com.example.myapplication.tasklist.ui.data.TaskListUiEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,87 +20,74 @@ class TaskListViewModel @Inject constructor(
     private val taskItemUiStateMapper: TaskItemUiStateMapper
 ) : ViewModel() {
 
-    private val taskListDTOLiveData: MutableLiveData<List<TaskDTO>> = MutableLiveData()
-    private val checkedTasksIdLiveData: MutableLiveData<List<String>> = MutableLiveData()
-    val taskListLiveData: MediatorLiveData<TaskListUiState> = MediatorLiveData()
+    private val checkedTasksIdStream: BehaviorSubject<List<String>> = BehaviorSubject.createDefault(
+        emptyList()
+    )
+    private val disposables: MutableList<Disposable> = mutableListOf()
 
-    val navigationStream: MutableLiveData<NavigationModel> = MutableLiveData()
+    val navigationStream: PublishSubject<NavigationModel> = PublishSubject.create()
 
-    init {
-        taskListLiveData.apply {
-            addSource(taskListDTOLiveData) { taskDTOList ->
-                this.value = buildUiState(taskDTOList, checkedTasksIdLiveData.value.orEmpty())
+    fun buildUiState(): Observable<TaskListUiState> {
+        return Observable.combineLatest(taskRepository.getAllTasks(), checkedTasksIdStream) { taskDTOList, checkedTasksId ->
+            val tasks = taskDTOList.map { taskDTO ->
+                taskItemUiStateMapper.mapToUiState(taskDTO = taskDTO, checkedTasksId = checkedTasksId)
             }
-            addSource(checkedTasksIdLiveData) { checkedTasksId ->
-                this.value = buildUiState(taskListDTOLiveData.value.orEmpty(), checkedTasksId)
-            }
-        }
-        viewModelScope.launch {
-            taskRepository
-                .getAllTasks()
-                .collect {
-                    removeInvalidCheckedIds(it)
-                    taskListDTOLiveData.postValue(it)
-                }
+            TaskListUiState(tasks = tasks, isDeleteButtonActive = checkedTasksId.isNotEmpty())
         }
     }
 
-    private fun buildUiState(
-        taskDTOList: List<TaskDTO>,
-        checkedTasksId: List<String>
-    ): TaskListUiState {
-        val tasks = taskDTOList.map { taskDTO ->
-            taskItemUiStateMapper.mapToUiState(
-                taskDTO = taskDTO,
-                checkedTasksId = checkedTasksId,
-            )
-        }
-        return TaskListUiState(tasks)
-    }
-
-    fun handleUiEvents(event: TaskListUiEvents) {
-        when (event) {
+    fun handleUiEvents(uiEvent: TaskListUiEvents) {
+        when (uiEvent) {
             is TaskListUiEvents.OnCheckChanged -> {
-                updateTaskCheckStatus(event.taskId,)
+                updateTaskCheckStatus(uiEvent.taskId)
             }
+
             TaskListUiEvents.DeleteDone -> {
                 deleteDone()
             }
+
             TaskListUiEvents.OnAddTaskClick -> {
-                navigationStream.postValue(NavigationModel.CreateTask)
+                navigationStream.onNext(NavigationModel.CreateTask)
             }
+
             is TaskListUiEvents.OnTaskClick -> {
-                navigationStream.postValue(NavigationModel.TaskClick(event.taskId))
+                navigationStream.onNext(NavigationModel.TaskClick(uiEvent.taskId))
             }
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun deleteDone() {
-        viewModelScope.launch {
-            checkedTasksIdLiveData.value?.forEach {
-                taskRepository
-                    .deleteTask(it)
-                    .collect()
+        checkedTasksIdStream
+            .take(1)
+            .subscribe { checkedTasksId ->
+                checkedTasksId.forEach { id ->
+                    taskRepository.deleteTask(id)
+                    val newCheckedList = checkedTasksIdStream.value?.filterNot { it == id }
+                    checkedTasksIdStream.onNext(newCheckedList)
+                }
             }
-        }
     }
 
+    @SuppressLint("CheckResult")
     private fun updateTaskCheckStatus(taskId: String) {
-        val checkedTasksId = checkedTasksIdLiveData.value.orEmpty().toMutableList()
-        if (checkedTasksId.contains(taskId)) {
-            checkedTasksId.remove(taskId)
-        } else {
-            checkedTasksId.add(taskId)
-        }
-        checkedTasksIdLiveData.value = checkedTasksId
-        println(checkedTasksIdLiveData.value)
+        checkedTasksIdStream
+            .take(1)
+            .subscribe { checkedTasksId ->
+                val mutableCheckedTasksId = checkedTasksId.toMutableList()
+                if (!checkedTasksId.contains(taskId)) {
+                    mutableCheckedTasksId.add(taskId)
+                } else {
+                    mutableCheckedTasksId.remove(taskId)
+                }
+                checkedTasksIdStream.onNext(mutableCheckedTasksId)
+            }
     }
 
-    private fun removeInvalidCheckedIds(tasks: List<TaskDTO>) {
-        val checkedIds = checkedTasksIdLiveData.value ?: emptyList()
-        val taskIds = tasks.map { it.id }
-
-        val validCheckedIds = checkedIds.filter { taskId -> taskIds.contains(taskId) }
-        checkedTasksIdLiveData.postValue(validCheckedIds)
+    override fun onCleared() {
+        super.onCleared()
+        disposables.forEach {
+            if(!it.isDisposed) it.dispose()
+        }
     }
 }

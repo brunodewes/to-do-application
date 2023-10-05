@@ -12,7 +12,6 @@ import com.example.myapplication.repository.TaskRepository
 import com.example.myapplication.taskdetail.data.TaskDetailUiEvents
 import com.example.myapplication.taskdetail.data.TaskDetailUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,35 +29,35 @@ class TaskDetailViewModel @Inject constructor(
 
     val navigationStream: MutableLiveData<NavigationModel> = MutableLiveData()
 
-    init {
-        viewModelScope.launch {
-            taskRepository
-                .getAllTasks()
-                .collect { tasks ->
-                    val task = tasks.find { it.id == taskId }
-                    task?.let { taskDTO ->
-                        taskTitleLiveData.postValue(taskDTO.title)
-                        taskDescriptionLiveData.postValue(taskDTO.description.orEmpty())
-                    }
-                }
-        }
-        taskDetailLiveData.apply {
-            addSource(taskTitleLiveData) { taskTitle ->
-                this.value = TaskDetailUiState(
-                    title = taskTitle,
-                    description = taskDescriptionLiveData.value.orEmpty(),
-                    id = taskId
-                )
-            }
-            addSource(taskDescriptionLiveData) { taskDescription ->
-                this.value = TaskDetailUiState(
-                    title = taskTitleLiveData.value!!,
-                    description = taskDescription,
-                    id = taskId
-                )
-            }
-        }
-    }
+//    init {
+//        viewModelScope.launch {
+//            taskRepository
+//                .getAllTasks()
+//                .collect { tasks ->
+//                    val task = tasks.find { it.id == taskId }
+//                    task?.let { taskDTO ->
+//                        taskTitleLiveData.postValue(taskDTO.title)
+//                        taskDescriptionLiveData.postValue(taskDTO.description.orEmpty())
+//                    }
+//                }
+//        }
+//        taskDetailLiveData.apply {
+//            addSource(taskTitleLiveData) { taskTitle ->
+//                this.value = TaskDetailUiState(
+//                    title = taskTitle,
+//                    description = taskDescriptionLiveData.value.orEmpty(),
+//                    id = taskId
+//                )
+//            }
+//            addSource(taskDescriptionLiveData) { taskDescription ->
+//                this.value = TaskDetailUiState(
+//                    title = taskTitleLiveData.value!!,
+//                    description = taskDescription,
+//                    id = taskId
+//                )
+//            }
+//        }
+//    }
 
     fun handleUiEvents(event: TaskDetailUiEvents) {
         when (event) {
@@ -84,6 +83,8 @@ class TaskDetailViewModel @Inject constructor(
                     if (it.isNotEmpty()) {
                         updateTask(title = it, description = taskDescriptionLiveData.value)
                         navigationStream.postValue(NavigationModel.NavigateBack)
+                    } else {
+                        taskDetailLiveData.postValue(TaskDetailUiState(title = taskTitleLiveData.value!!, description = taskDescriptionLiveData.value.orEmpty(), id = taskId, isEmptyTitleSnackBarActive = true))
                     }
                 }
             }
@@ -94,7 +95,6 @@ class TaskDetailViewModel @Inject constructor(
         viewModelScope.launch {
             taskRepository
                 .updateTask(TaskDTO(id = taskId, title = title, description = description))
-                .collect()
         }
     }
 
@@ -102,7 +102,6 @@ class TaskDetailViewModel @Inject constructor(
         viewModelScope.launch {
             taskRepository
                 .deleteTask(taskId)
-                .collect()
         }
     }
 }
